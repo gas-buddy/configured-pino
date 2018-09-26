@@ -1,0 +1,40 @@
+box: node:8
+
+build:
+  steps:
+    - npm-install
+
+    - script:
+      name: lint
+      code: npm run lint
+
+    - script:
+      name: environment vars
+      code: |
+        export LOGSTASH_HOST=$LOGSTASH_PORT_9999_TCP_ADDR
+        export LOGSTASH_PORT=$LOGSTASH_PORT_9999_TCP_PORT
+
+    - script:
+      name: test with coverage
+      code: |
+        npm run --silent ci-test
+        npm run --silent ci-cover
+
+    - script:
+      name: build
+      code: npm run build
+
+  after-steps:
+    - script:
+      name: Post to coveralls
+      code: |
+        npm install --silent coveralls
+        npm run --silent ci-coveralls
+deploy:
+  steps:
+    - script:
+      name: npm publish
+      code: |
+        npm config set unsafe-perm true
+        echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+        npm publish . --tag latest
