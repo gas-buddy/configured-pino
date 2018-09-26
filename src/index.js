@@ -21,15 +21,18 @@ export default class ConfiguredLogstash {
     }
 
     let dest;
-    if (options.extreme === true && !options.file) {
+    if (opts.extreme === true && !opts.file) {
       dest = pino.extreme();
-    } else if (options.extreme || options.file) {
+    } else if (opts.extreme || opts.file) {
       dest = pino.extreme(opts.extreme || options.file);
+    } else if (opts.file) {
+      dest = pino.desintation(opts.file);
     }
     if (dest) {
       this.flushSync = () => dest.flushSync();
     }
     this.pino = pino(cleanOptions, dest);
+    this.pino[WrappedLogger.IS_PINO] = true;
 
     // We configure this right away - not waiting for start because
     // other hydrated objects probably want to have winston logging work

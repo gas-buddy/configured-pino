@@ -48,6 +48,8 @@ function trimMetadata(object, depth, traversedObjects) {
 }
 
 export default class WrappedLogger {
+  static IS_PINO = Symbol('Pino root logger marker')
+
   constructor(logger, additionalMetadata, options) {
     this.logger = logger;
     this.meta = additionalMetadata;
@@ -119,19 +121,31 @@ export default class WrappedLogger {
   }
 
   debug(msg, meta) {
-    return this.logger.debug(this.applyAdditionalMetadata(meta), msg);
+    if (this.logger[WrappedLogger.IS_PINO]) {
+      return this.logger.debug(this.applyAdditionalMetadata(meta), msg);
+    }
+    return this.logger.debug(msg, this.applyAdditionalMetadata(meta), msg);
   }
 
   info(msg, meta) {
-    return this.logger.info(this.applyAdditionalMetadata(meta), msg);
+    if (this.logger[WrappedLogger.IS_PINO]) {
+      return this.logger.info(this.applyAdditionalMetadata(meta), msg);
+    }
+    return this.logger.info(msg, this.applyAdditionalMetadata(meta), msg);
   }
 
   warn(msg, meta) {
-    return this.logger.warn(this.applyAdditionalMetadata(meta), msg);
+    if (this.logger[WrappedLogger.IS_PINO]) {
+      return this.logger.warn(this.applyAdditionalMetadata(meta), msg);
+    }
+    return this.logger.warn(msg, this.applyAdditionalMetadata(meta), msg);
   }
 
   error(msg, meta) {
-    return this.logger.error(this.applyAdditionalMetadata(meta), msg);
+    if (this.logger[WrappedLogger.IS_PINO]) {
+      return this.logger.error(this.applyAdditionalMetadata(meta), msg);
+    }
+    return this.logger.error(msg, this.applyAdditionalMetadata(meta), msg);
   }
 
   loggerWithDefaults(meta, options) {
