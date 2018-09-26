@@ -4,7 +4,7 @@
   "description": "A configuration driven Pino logging infrastructure",
   "main": "build/index.js",
   "config": {
-    "coverage": "--lines=80 --statements=80 --functions=80 --branches=60"
+    "coverage": "--lines=75 --statements=75 --functions=80 --branches=60"
   },
   "engines": {
     "node": ">=8.9"
