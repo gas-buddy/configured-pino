@@ -84,7 +84,7 @@ export default class WrappedLogger {
           }
         }
         if (this.spanContext) {
-          addl.span = this.spanId;
+          addl.sp = this.spanId;
         }
 
         return addl;
