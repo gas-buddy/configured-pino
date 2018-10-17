@@ -41,6 +41,6 @@ tap.test('test_metadata', async (t) => {
   t.strictEquals(trimmedMetadata.deeper.deeper.deeper.deeper.deeper.deeper, '[Too Deep]', 'Fields more than 5 levels deep should be removed.');
   t.deepEquals(defaultsLogger.applyAdditionalMetadata(), defaults, 'Null metadata gets only defaults');
 
-  t.deepEquals(noDefaultsLogger.applyAdditionalMetadata(new Buffer('a')), '[Buffer]', 'Buffer gets replaced with [Buffer]');
-  t.deepEquals(noDefaultsLogger.applyAdditionalMetadata({ buffer: new Buffer('a') }), { buffer: '[Buffer]' }, 'Buffer gets replaced with [Buffer] deeply');
+  t.deepEquals(noDefaultsLogger.applyAdditionalMetadata(Buffer.from('a')), '[Buffer]', 'Buffer gets replaced with [Buffer]');
+  t.deepEquals(noDefaultsLogger.applyAdditionalMetadata({ buffer: Buffer.from('a') }), { buffer: '[Buffer]' }, 'Buffer gets replaced with [Buffer] deeply');
 });

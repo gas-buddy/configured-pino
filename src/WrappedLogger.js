@@ -57,7 +57,7 @@ export default class WrappedLogger {
 
     if (logger.spanContext) {
       // Inherit the parent context
-      const id = logger.spanContext.id;
+      const { id } = logger.spanContext;
       logger.spanContext.allocatedCount = (logger.spanContext.allocatedCount || 0) + 1;
       this.spanContext = {
         id: `${id || ''}${id ? '.' : ''}${logger.spanContext.allocatedCount}`,
@@ -67,8 +67,8 @@ export default class WrappedLogger {
       this.spanContext = { id: options.spanId };
     }
 
-    const needsDynamic = this.spanContext ||
-      (options && (options.addTimestamp || options.addCounter));
+    const needsDynamic = this.spanContext
+      || (options && (options.addTimestamp || options.addCounter));
     if (needsDynamic) {
       this.dynamic = () => {
         const addl = {};
@@ -103,7 +103,8 @@ export default class WrappedLogger {
       }
       const base = this.dynamic ? this.dynamic() : {};
       return Object.assign(base, this.meta, fullMeta);
-    } else if (this.dynamic) {
+    }
+    if (this.dynamic) {
       return Object.assign(this.dynamic(), fullMeta);
     }
     return fullMeta;
