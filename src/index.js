@@ -11,13 +11,19 @@ export default class ConfiguredLogstash {
     // Make pino format look MOSTLY like old winston format
     const cleanOptions = _.pick(opts, [
       'name', 'level', 'redact', 'serializers', 'enabled',
-      'crlf', 'messageKey', 'prettyPrint', 'useLevelLabels',
+      'crlf', 'messageKey', 'useLevelLabels',
     ]);
     if (opts.meta) {
       cleanOptions.base = opts.meta;
     }
     if ('addTimestamp' in opts) {
       cleanOptions.timestamp = opts.addTimestamp;
+    }
+    if ('prettyPrint' in opts) {
+      cleanOptions.prettyPrint = {
+        colorize: true,
+        translateTime: 'SYS:h:MM:ss.l TT', // Human-readable time in system timezone
+      };
     }
 
     let dest;
