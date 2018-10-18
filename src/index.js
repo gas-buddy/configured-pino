@@ -19,7 +19,7 @@ export default class ConfiguredLogstash {
     if ('addTimestamp' in opts) {
       cleanOptions.timestamp = opts.addTimestamp;
     }
-    if ('prettyPrint' in opts) {
+    if (opts.prettyPrint) {
       cleanOptions.prettyPrint = {
         colorize: true,
         translateTime: 'SYS:h:MM:ss.l TT', // Human-readable time in system timezone
