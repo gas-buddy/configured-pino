@@ -2,6 +2,8 @@ import _ from 'lodash';
 import pino from 'pino';
 import WrappedLogger from './WrappedLogger';
 
+const PRETTY = Symbol('Track whether pretty printing is enabled');
+
 export default class ConfiguredLogstash {
   constructor(context, options) {
     const opts = options || {};
@@ -27,6 +29,9 @@ export default class ConfiguredLogstash {
     } else if ('prettyPrint' in opts) {
       cleanOptions.prettyPrint = opts.prettyPrint;
     }
+    if (cleanOptions.prettyPrint) {
+      this[PRETTY] = true;
+    }
 
     let dest;
     if (opts.extreme === true && !opts.file) {
@@ -34,10 +39,10 @@ export default class ConfiguredLogstash {
     } else if (opts.extreme || opts.file) {
       dest = pino.extreme(opts.extreme || options.file);
     } else if (opts.file) {
-      dest = pino.desintation(opts.file);
+      dest = pino.destination(opts.file);
     }
     if (dest) {
-      this.flushSync = () => dest.flushSync();
+      this.flushSync = () => (this[PRETTY] ? dest.flush() : dest.flushSync());
     }
     this.pino = pino(cleanOptions, dest);
     this.pino[WrappedLogger.IS_PINO] = true;
@@ -53,12 +58,40 @@ export default class ConfiguredLogstash {
       addTimestamp: this.addTimestamp,
       addCounter: this.addCounter,
     });
+    this.flushInterval = setInterval(() => this.pino.flush(), 10000).unref();
+    if (!this[PRETTY]) {
+      // use pino.final to create a special logger that
+      // guarantees final tick writes
+      const handler = pino.final(this.pino, (err, finalLogger, evt) => {
+        finalLogger.info(`configured-pino::${evt}`);
+        if (err) { finalLogger.error(err, 'error caused exit'); }
+        process.exit(err ? 1 : 0);
+      });
+      // catch all the ways node might exit
+      this.eventHandlers = {
+        beforeExit() { handler(null, 'beforeExit'); },
+        exit() { handler(null, 'exit'); },
+        uncaughtException(err) { handler(err, 'uncaughtException'); },
+        SIGINT() { handler(null, 'SIGINT'); },
+        SIGQUIT() { handler(null, 'SIGQUIT'); },
+        SIGTERM() { handler(null, 'SIGTERM'); },
+      };
+      Object.entries(this.eventHandlers).forEach(([e, fn]) => process.on(e, fn));
+    }
     return this.rootLogger;
   }
 
   async stop() {
     if (this.flushSync) {
       this.flushSync();
+    }
+    if (this.flushInterval) {
+      clearInterval(this.flushInterval);
+      delete this.flushInterval;
+    }
+    if (this.eventHandlers) {
+      Object.entries(this.eventHandlers).forEach(([e, fn]) => process.removeListener(e, fn));
+      delete this.eventHandlers;
     }
   }
 }
