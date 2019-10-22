@@ -9,12 +9,6 @@ build:
       code: npm run lint
 
     - script:
-      name: environment vars
-      code: |
-        export LOGSTASH_HOST=$LOGSTASH_PORT_9999_TCP_ADDR
-        export LOGSTASH_PORT=$LOGSTASH_PORT_9999_TCP_PORT
-
-    - script:
       name: test with coverage
       code: |
         npm run --silent ci-test

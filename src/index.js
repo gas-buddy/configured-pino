@@ -4,7 +4,7 @@ import WrappedLogger from './WrappedLogger';
 
 const PRETTY = Symbol('Track whether pretty printing is enabled');
 
-export default class ConfiguredLogstash {
+export default class ConfiguredPino {
   constructor(context, options) {
     const opts = options || {};
     this.shutdownFunctions = [];
