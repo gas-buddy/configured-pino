@@ -1,6 +1,6 @@
 {
   "name": "@gasbuddy/configured-pino",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "A configuration driven Pino logging infrastructure",
   "main": "build/index.js",
   "config": {

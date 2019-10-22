@@ -62,14 +62,16 @@ export default class ConfiguredPino {
     if (!this[PRETTY]) {
       // use pino.final to create a special logger that
       // guarantees final tick writes
+      let stop;
       const handler = pino.final(this.pino, (err, finalLogger, evt) => {
-        finalLogger.info(`configured-pino::${evt}`);
-        if (err) { finalLogger.error(err, 'error caused exit'); }
-        process.exit(err ? 1 : 0);
+        if (!stop) {
+          finalLogger.info(`configured-pino::${evt}`);
+          if (err) { finalLogger.error('error caused exit', err); }
+        }
       });
       // catch all the ways node might exit
       this.eventHandlers = {
-        beforeExit() { handler(null, 'beforeExit'); },
+        beforeExit() { handler(null, 'beforeExit'); stop = true; },
         exit() { handler(null, 'exit'); },
         uncaughtException(err) { handler(err, 'uncaughtException'); },
         SIGINT() { handler(null, 'SIGINT'); },
