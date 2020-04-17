@@ -32,7 +32,7 @@
   "devDependencies": {
     "@babel/cli": "^7.4.4",
     "@babel/register": "^7.4.4",
-    "babel-preset-gasbuddy": "^5.6.0",
+    "babel-preset-gasbuddy": "^6.0.0",
     "cross-env": "^5.2.1",
     "eslint-config-gasbuddy": "^5.3.0",
     "mock-fs": "^4.10.0",
