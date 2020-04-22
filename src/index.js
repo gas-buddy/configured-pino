@@ -13,7 +13,7 @@ export default class ConfiguredPino {
     // Make pino format look MOSTLY like old winston format
     const cleanOptions = _.pick(opts, [
       'name', 'level', 'redact', 'serializers', 'enabled',
-      'crlf', 'messageKey', 'useLevelLabels',
+      'crlf', 'messageKey',
     ]);
     if (opts.meta) {
       cleanOptions.base = opts.meta;
@@ -41,6 +41,12 @@ export default class ConfiguredPino {
     } else if (opts.file) {
       dest = pino.destination(opts.file);
     }
+
+    if (opts.useLevelLabels) {
+      cleanOptions.formatters = cleanOptions.formatters || {};
+      cleanOptions.formatters.level = level => ({ level });
+    }
+
     if (dest) {
       this.flushSync = () => (this[PRETTY] ? dest.flush() : dest.flushSync());
     }
