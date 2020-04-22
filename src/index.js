@@ -35,9 +35,9 @@ export default class ConfiguredPino {
 
     let dest;
     if (opts.extreme === true && !opts.file) {
-      dest = pino.extreme();
+      dest = pino.destination({ sync: false });
     } else if (opts.extreme || opts.file) {
-      dest = pino.extreme(opts.extreme || options.file);
+      dest = pino.destination({ sync: !opts.extreme, dest: options.file });
     } else if (opts.file) {
       dest = pino.destination(opts.file);
     }
